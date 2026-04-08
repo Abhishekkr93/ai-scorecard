@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
 import random
-import google.generativeai as genai
+from google import genai
 
-# 🔑 Gemini API (put your key here)
-genai.configure(api_key="YOUR_API_KEY")
-model = genai.GenerativeModel("gemini-1.5-flash")
+# 🔑 Paste your API key here
+client = genai.Client(api_key="AIzaSyBJUUyfVjRKMoENc3LdrZaA-nJo9wLG9Og")
 
 # 🎨 IPL Theme UI
 st.set_page_config(page_title="IPL AI Scorecard", layout="wide")
@@ -26,7 +25,7 @@ st.markdown("""
 
 st.title("🏏 IPL AI Vibe Scorecard 🔥")
 
-# 🧩 Tabs (Premium UI)
+# 🧩 Tabs
 tab1, tab2, tab3 = st.tabs(["📊 Scorecard", "🧠 AI Vibes", "🎙️ Commentary"])
 
 # ------------------ TAB 1 ------------------
@@ -57,7 +56,7 @@ with tab1:
     st.progress(win_prob)
     st.write(f"{win_prob}% chance to win")
 
-    # Fake Live Update
+    # 🔥 Fake Live Update
     if st.button("Simulate Live Update"):
         runs += random.randint(1, 6)
         st.success(f"Updated Score: {runs}/{wickets}")
@@ -79,7 +78,10 @@ with tab2:
         3. Who is winning and why
         """
 
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model="gemini-1.5-flash",
+            contents=prompt
+        )
 
         st.success("AI Insight Generated 🔥")
         st.write(response.text)
@@ -107,6 +109,9 @@ with tab3:
         {event}
         """
 
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model="gemini-1.5-flash",
+            contents=prompt
+        )
 
         st.write(response.text)
