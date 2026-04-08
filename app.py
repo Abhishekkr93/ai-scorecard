@@ -1,64 +1,112 @@
 import streamlit as st
 import pandas as pd
 import random
+import google.generativeai as genai
 
-st.set_page_config(page_title="AI Cricket Scorecard", layout="wide")
+# 🔑 Gemini API (put your key here)
+genai.configure(api_key="YOUR_API_KEY")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
-st.title("🏏 AI Smart Scorecard")
+# 🎨 IPL Theme UI
+st.set_page_config(page_title="IPL AI Scorecard", layout="wide")
 
-# Dummy Teams
-team1 = "MI"
-team2 = "CSK"
+st.markdown("""
+    <style>
+    .main {
+        background-color: #0b1c2c;
+        color: white;
+    }
+    .stButton>button {
+        background-color: #ff4b2b;
+        color: white;
+        border-radius: 10px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-st.header(f"{team1} vs {team2}")
+st.title("🏏 IPL AI Vibe Scorecard 🔥")
 
-# Dynamic Score Simulation
-runs = st.slider("Runs", 50, 250, 145)
-wickets = st.slider("Wickets", 0, 10, 3)
-overs = st.slider("Overs", 1.0, 20.0, 16.2)
+# 🧩 Tabs (Premium UI)
+tab1, tab2, tab3 = st.tabs(["📊 Scorecard", "🧠 AI Vibes", "🎙️ Commentary"])
 
-st.subheader(f"Score: {runs}/{wickets} ({overs} overs)")
+# ------------------ TAB 1 ------------------
+with tab1:
+    st.header("Match Dashboard")
 
-# Batsmen Table
-batsmen = pd.DataFrame({
-    "Player": ["Rohit Sharma", "Surya"],
-    "Runs": [random.randint(20, 80), random.randint(10, 60)],
-    "Balls": [random.randint(10, 50), random.randint(10, 40)]
-})
+    team1 = "MI"
+    team2 = "CSK"
 
-st.write("### 🏏 Batsmen")
-st.table(batsmen)
+    runs = st.slider("Runs", 50, 250, 145)
+    wickets = st.slider("Wickets", 0, 10, 3)
+    overs = st.slider("Overs", 1.0, 20.0, 16.2)
 
-# Win Probability Logic
-run_rate = runs / overs
-required_rate = 8.5
+    st.subheader(f"{team1} vs {team2}")
+    st.metric("Score", f"{runs}/{wickets}")
+    st.metric("Overs", overs)
 
-if run_rate > required_rate:
-    win_prob = random.randint(60, 85)
-else:
-    win_prob = random.randint(30, 55)
+    # Win Probability
+    run_rate = runs / overs
+    required_rate = 8.5
 
-st.write("## 📊 Win Probability")
-st.progress(win_prob)
-st.write(f"{win_prob}% chance to win")
-
-# AI Insight (Fake but smart-looking)
-st.write("## 🧠 AI Insight")
-
-if st.button("Generate Insight"):
-    if win_prob > 60:
-        st.success("Batting team is dominating with strong momentum 🔥")
+    if run_rate > required_rate:
+        win_prob = random.randint(60, 85)
     else:
-        st.warning("Match is getting tight, pressure is building ⚡")
+        win_prob = random.randint(30, 55)
 
-# Commentary Generator
-event = st.text_input("Enter last ball event")
+    st.write("## 📊 Win Probability")
+    st.progress(win_prob)
+    st.write(f"{win_prob}% chance to win")
 
-if st.button("Generate Commentary"):
-    comments = [
-        "What a शानदार shot! Pure timing!",
-        "That’s gone for a massive SIX! 🚀",
-        "Brilliant bowling under pressure!",
-        "Crowd is loving this contest!"
-    ]
-    st.write(random.choice(comments))
+    # Fake Live Update
+    if st.button("Simulate Live Update"):
+        runs += random.randint(1, 6)
+        st.success(f"Updated Score: {runs}/{wickets}")
+
+# ------------------ TAB 2 ------------------
+with tab2:
+    st.header("🧠 AI Match Insights")
+
+    if st.button("Analyze Match Vibe"):
+        prompt = f"""
+        You are an IPL expert commentator.
+
+        Score: {runs}/{wickets}
+        Overs: {overs}
+
+        Give:
+        1. 1-line headline
+        2. Match insight
+        3. Who is winning and why
+        """
+
+        response = model.generate_content(prompt)
+
+        st.success("AI Insight Generated 🔥")
+        st.write(response.text)
+        st.balloons()
+
+    # Vibe Meter
+    vibe = st.slider("🔥 Match Vibe Meter", 0, 100, 65)
+
+    if vibe > 70:
+        st.success("🔥 High energy match!")
+    elif vibe > 40:
+        st.info("😐 Balanced game")
+    else:
+        st.warning("😬 Pressure situation!")
+
+# ------------------ TAB 3 ------------------
+with tab3:
+    st.header("🎙️ AI Commentary Generator")
+
+    event = st.text_input("Enter last ball event")
+
+    if st.button("Generate Commentary"):
+        prompt = f"""
+        Create exciting IPL commentary in Hinglish for:
+        {event}
+        """
+
+        response = model.generate_content(prompt)
+
+        st.write(response.text)
