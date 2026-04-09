@@ -5,7 +5,7 @@ import time
 from google import genai
 
 # 🔑 Replace with your API key
-client = genai.Client(api_key="AIzaSyBJUUyfVjRKMoENc3LdrZaA-nJo9wLG9Og")
+client = genai.Client(api_key="API")
 
 # 🎨 UI Config
 st.set_page_config(page_title="IPL AI Scorecard", layout="wide")
